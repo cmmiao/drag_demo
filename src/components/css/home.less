@@ -1,13 +1,34 @@
+.dp-box{
+    height: 100%;
+}
 .dp-container{
     width: 100%;
-    height: 100%;
+    height: calc(100% - 50px);
     display: flex;
+    justify-content: space-between;
+    background: #eee;
 }
 .dp-left{
     width: 400px;
-    height: 1000px;
-    // background: #ccc;
-    border-right: 1px solid #ccc;
+    height: 100%;
+    border-right: 1px solid #eee;
+    font-size: 14px;
+    padding: 10px 20px;
+    .dp-left-title{
+        height: 30px;
+        line-height: 30px;
+        text-align: left;
+        padding-left: 14px;
+        position: relative;
+    }
+    .dp-left-title:before{
+        position: absolute;
+        left: 0;
+        top: 8px;
+        content: "";
+        height: 14px;
+        border-left: 2px solid #5b99fd; 
+    }
 
     .dp-wrapper{
         display: flex;
@@ -16,36 +37,129 @@
             box-sizing: border-box;
             width: 130px;
             height: 80px;
-            padding: 20px;
+            padding: 14px;
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
+            background: #fff;
+            border: 1px solid #eee;
+            cursor: pointer;
             .iconfont {
                 font-size: 30px;
             }
         }
+        .dp-left-item:hover{
+            color: #5b99fd;
+            border: 1px dashed #5b99fd;
+        }
+        // .dp-left-item.dragOn{
+        //     color: #5b99fd;
+        //     border: 1px dashed #5b99fd;
+        // }
     }
 }
 .dp-center{
-    width: 800px;
-    border-right:1px solid #ccc;
+    width: 655px;
+    min-width: 655px;
+    background: #fff;
+    padding: 15px;
+    box-sizing: border-box;
     position: relative;
-    .drop-item{
-        box-sizing: border-box;
-        border: 1px solid #ccc;
+    .dp-center-lists{
+        position: relative;
+        // height: 300px;
+        .drop-item{
+            box-sizing: border-box;
+        }
     }
+    .dp-control-panel{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        .dp-control-box{
+            position: relative;
+            width: 100%;
+            height: 0px;
+            left: 0;
+            z-index: 1;
+
+        }
+        .icon-add,.icon-del{
+            position: absolute;
+            bottom: -7px;
+            right: 70px;
+            width: 14px;
+            height: 14px;
+            line-height: 14px;
+            font-size: 12px;
+            font-style: normal;
+            color: #fff;
+            background: #ff7172;
+            border: 1px solid #fff;
+            text-align: center;
+            cursor: pointer;
+        }
+        .icon-add{
+            right: 95px;
+            background: #61d790;
+        }
+    }
+    
+
     
 }
 .dp-right{
-    width: 500px;
-    position: relative;
+    width: 320px;
+    padding: 10px 20px;
+    box-sizing: border-box;
     .dp-set-box{
         width: 280px;
         height: 500px;
         box-sizing: border-box;
-        border: 2px solid #ccc;
+        border: 2px solid #eee;
         border-radius: 5px;
-        position: absolute;
-        left: 150px;
-        top: 100px;
+        text-align: left;
     }
+    .dp-set-title{
+        height: 30px;
+        line-height: 30px;
+        border-radius: 10px;
+        background: #eee;
+        font-size: 14px;
+        padding-left: 14px;
+        position: relative;
+
+    }
+    .dp-set-title:before{
+        position: absolute;
+        left: 0;
+        top: 8px;
+        content: "";
+        height: 14px;
+        border-left: 2px solid #5b99fd;
+    }
+    .dp-set-lists{
+        background: #fff;
+        padding: 14px;
+    }
+}
+.editor_com{
+    padding: 6px;
+    word-break: break-all;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative; 
+    border: 1px dashed transparent; 
+}
+.editor_com:hover{
+    // border-color:transparent;
+    border: 1px dashed #ccc;
+    // background-color: #eaf2ff;
+}
+.editor_com.select {
+    border: 1px dashed #ccc;
+    background-color: #eaf2ff;
+
 }
