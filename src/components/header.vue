@@ -32,7 +32,6 @@ export default {
 
     },
     created(){
-        console.log('0000',this.prop)
     }
 }
 </script>

@@ -11,7 +11,8 @@
               </div>
           </div>  
         </div>
-        <div class="dp-center" @drop.stop.prevent="drop($event)" @dragover.prevent=dragover($event)>
+        <!--   -->
+        <div class="dp-center" @drop.prevent="drop($event)" @dragover.prevent>
             <div class="dp-control-panel" v-if="isSelect" >
                 <div class="dp-control-box" :style="{top:selectTop+'px'}" >
                     <i class="iconfont icon-add" @click.stop.prevent="addItem"></i>
@@ -20,13 +21,16 @@
                 
             </div>
             <div class="dp-center-lists" ref="centerBox">
+                <!-- <keep-alive> -->
+                    <component class="drop-item editor_com" v-for="val in centerData" :key="val.props.id" :is="val.com" ref="centerItem" :prop="{...val.props,controlId:selectId}" :curData="getCurdata" :curSelect="getCurselect"
+                    v-dragging="{ item: val, list: centerData, group: 'val'  }">
+                    </component>
+                <!-- </keep-alive> -->
                 <!-- <component class="drop-item" v-for="(val,i) in centerData"  :key="i" :id="val.id" :is="val.com" :prop='val.props'   :openPane="openPane" @curData=dragCenter></component> -->
-                <component class="drop-item editor_com" draggable="true" v-for="(val,i) in centerData"  :key="i" :is="val.com" ref="centerItem" :prop="{...val.props,controlId:selectId,controlTop:selectTop}" :curData="getCurdata" :curSelect="getCurselect"></component>
             </div>
-                
         </div>
         <div class="dp-right">
-            <div class="dp-set-box" v-show="centerData.length>0&&isSelect">
+            <div class="dp-set-box" ref="setBox" v-show="centerData.length>0&&isSelect">
                 <div class="dp-set-title">{{curSet}}</div>
                 <div class="dp-set-lists">
                     <component class="set-item" v-for="(val,i) in rightData"  :key="i" :is="val.com" :prop="val.props"></component>
@@ -40,7 +44,8 @@
     
 </template>
 <script>
-import Header from './header.vue'
+import Header from './header.vue';
+import {mapState,mapMutations} from 'vuex';
 export default {
     components:{ Header },
     data(){
@@ -50,32 +55,54 @@ export default {
                     "icon":"icon-image",
                     "title": "img",
                     "name":"图片",
+                    "setTitle": "图片设置",
                     "style":{
                         "width": "100%",
                         "height": "200px",
                         "left": "0px",
                         "top": "0px",
                     },
-                    "data":{
-                        "imgsrc":"https://image.pre-zuma.com/image/1260446859901519919.jpg" ,
-                        "setTitle": "图片设置",
-                        "setLink" :"/set/changeImg.vue" 
+                    "data":[{
+                        type:"/set/changeImg.vue",
+                        props:{
+                            "title": "图片设置",
+                            "value":"https://image.pre-zuma.com/image/1260446859901519919.jpg" ,
+                        }
+                    },{
+                        type:"/set/changeStyle.vue",
+                        props:{
+                            "title": "组件宽度",
+                            "value": "长",
+                             "liData": ["短","中","长"]
+                        }
                     }
+                    ]
                 },{
                     "icon":"icon-video",
                     "title": "video",
                     "name":"视频",
+                    "setTitle": "视频设置",
                     "style":{
                         "width": "100%",
                         "height": "300px",
                         "left": "0px",
                         "top": "0px",
                     },
-                    "data":{
-                        "videosrc":"https://www.runoob.com/try/demo_source/movie.mp4" ,
-                        "setTitle": "视频设置",
-                        "setLink" :"/set/changeVideo.vue" 
+                    "data":[{
+                        type:"/set/changeImg.vue",
+                        props:{
+                            "title": "视频设置",
+                            "value":"https://www.runoob.com/try/demo_source/movie.mp4" ,
+                        }
+                    },{
+                        type:"/set/changeStyle.vue",
+                        props:{
+                            "title": "组件宽度",
+                            "value": "长",
+                            "liData": ["短","中","长"]
+                        }
                     }
+                    ]
                 },{
                     "icon":"icon-slide",
                     "title": "slide",
@@ -115,39 +142,43 @@ export default {
             centerData:[], // 存储拖放下的数据
             rightData:[], // 右侧设置项数据
             idLists:[], // 存储拖放下的数据的id
-            heightData: 0, // 存储拖拽出来数据的高度总和
             selfX: 0,
             selfY: 0,
             curID: '',// 当前拖动元素的id
             curSet: '', // 设置项标题
             isSelect: false, // 中央区域的组件未被选中
             selectId: '',
-            selectIndex: '',
-            selectHeight: 0,
             selectTop: 0,
         }
     },
     
     computed:{
-       
-
+     ...mapState(['selectCom','setInfo']),
+        // centerData() {
+        //     return this.$store.state.centerData
+        // }
+        // currentData() {
+        //     return this.$store.state.selectCom[0]
+        // }
     },
     methods:{
+        // 拖拽使用的插件  npm install awe-dnd --save
+        ...mapMutations(['setSelectCom']),
         getID(length){
             return Number(Math.random().toString().substr(3,length) + Date.now()).toString(36);
         },
         dragItem(item,e){
-            
+            const data = JSON.parse(JSON.stringify(item))
+            data.id = this.getID(3)
+            this.currentData = data;
             // if(this.currentData) return;
-            this.currentData = JSON.parse(JSON.stringify(item)); // 复制item赋值给currentData
-            this.currentData.id= this.getID(3);
+            // this.currentData = JSON.parse(JSON.stringify(item)); // 复制item赋值给currentData
+            // this.currentData.id= this.getID(3);
+            // this.$store.commit("deleteSelCom") 
+            // this.$store.commit("setSelectCom" ,data) 
             e.dataTransfer.setData('text',e.target.innerHTML);
-            // e.dataTransfer.effectAllowed = 'copy';
-            // console.log('鼠标按下---位置1', e.dataTransfer.effectAllowed)
         },
-        dragover(e){
-            // e.dataTransfer.dropEffect = 'copy';
-        },
+        
         drop(e){
             e.dataTransfer.getData('text');
             let currentData = this.currentData;
@@ -166,82 +197,74 @@ export default {
                         type = video;
                         break;   
                 }
-                // const component = ()=> import('@/components/img/img01.vue')
                 const component = ()=> import('@/components'+type)
                 this.centerData.push({
                     com: component,
                     props:this.currentData});
                 this.idLists.push(currentData.id); //
-                this.heightData+=parseInt(currentData.style.height);
-                this.selectTop= this.heightData + 15;
-                // console.log('计算高度总和', this.heightData)               
-            }  
-            console.log('中央区域数据', this.centerData)
-            // 设置项渲染
-            this.rightData = [];
-            this.curSet = this.currentData.data.setTitle;
-            let curSet = this.currentData.data.setLink;
-            let setCom = ()=>import('@/components'+ curSet);
-            this.rightData.push({
-                com: setCom,
-                props: this.currentData.data
-            })
+                let heightData = 0;
+                this.centerData.map(val =>{
+                    heightData += parseInt(val.props.style.height);
+                })
+                this.selectTop= heightData + 15;
+                this.$store.commit('setSelectCom',this.currentData);
+            } 
+            this.getCurSet(this.currentData);
+            // this.$store.commit('setSelectCom',undefined);
             this.currentData = null;
 
+        },
+        getCurSet(data){
+            this.rightData = [];
+            this.curSet = data.setTitle;
+            // 遍历设置项,添加到rightData数据里面
+            let curSet = data.data;
+            curSet.map((val)=>{
+                let setCom = ()=>import('@/components'+val.type)
+                this.rightData.push({
+                    com: setCom,
+                    props: val.props
+                })
+            })
         },
         getCurdata(data){
             // 拖拽排序得问题
             this.currentData = data;
             this.isSelect = true;
-            // console.log('打印data,父传子方法, 拖拽时获取当前数据',data,'event',e)
         },
-        getCurselect(id){
+        getCurselect(data){
             // 记录点击时当前的下标
-            console.log('选中组件----组件点击id',id, this.currentData)
+            // console.log('选中组件----组件点击id', this.currentData)
             this.isSelect = true;
-            this.selectId = id;
-            this.selectIndex = this.getRealIndex(id);
-            this.selectHeight = parseInt(this.centerData[this.selectIndex].props.style.height);
+            this.currentData = data;
+            this.selectId = data.id;
+            let selectIndex = this.getRealIndex(data.id);
+            let selectHeight = parseInt(data.style.height);
             this.$nextTick(()=>{
-                let curBox = this.$refs.centerItem[this.selectIndex];
+                let curBox = this.$refs.centerItem[selectIndex];
                 let offsetTop = curBox.$el.offsetTop;
-                this.selectTop = offsetTop + this.selectHeight + 15;
-                console.log('组件选中了,点击时现实的----id',curBox,)
-                this.rightData = [];
-                this.curSet = curBox.data.setTitle;
-                let curSet = curBox.data.setLink;
-                let setCom = ()=>import('@/components'+ curSet);
-                this.rightData.push({
-                    com: setCom,
-                    props: curBox.data
-                })
-
+                this.selectTop = offsetTop + selectHeight + 15;
+                this.getCurSet(data);
             })
-            // 重新渲染设置项---只显示当前组件的设置项 
-            // 通过id确定当前设置项
-           
-
-            
-
-
-
         },
+
+        
         addItem(){
-            // console.log('进入添加数据',this.selectIndex,this.centerData[this.selectIndex])
-            this.selectIndex = this.getRealIndex(id);
-            let curCom = this.centerData[this.selectIndex];
+            let selectIndex = this.getRealIndex(this.currentData.id);
+            let curCom = this.centerData[selectIndex];
             let selectData = JSON.parse(JSON.stringify(curCom.props));
             selectData.id= this.getID(3);
             let selectCom = curCom.com;
-            this.centerData.splice(this.selectIndex+1,0,{com:selectCom,props:selectData});
-            this.idLists.splice(this.selectIndex+1,0,selectData.id);
-
+            this.centerData.splice(selectIndex+1,0,{com:selectCom,props:selectData});
+            this.idLists.splice(selectIndex+1,0,selectData.id);
+            this.$store.state.centerData = this.centerData
         },
         delItem(){
             this.isSelect = false;
-            this.selectIndex = this.getRealIndex(id);
-            this.centerData.splice(this.selectIndex,1);
-            this.idLists.splice(this.selectIndex,1);
+            let selectIndex = this.getRealIndex(this.currentData.id);
+            this.centerData.splice(selectIndex,1);
+            this.idLists.splice(selectIndex,1);
+            this.$store.state.centerData = this.centerData
         },
         // 获取选中元素的真实下标
         getRealIndex(id){
@@ -254,9 +277,10 @@ export default {
         // 点击非中间区域组件,隐藏增加删除按钮
         closeControlPanel(e){
             let curBox = this.$refs.centerBox;
+            let setBox = this.$refs.setBox;
             // console.log(e.target,'点击事件','jjjj',curBox)
             if(this.isSelect){
-                if(!curBox.contains(e.target)){
+                if(!curBox.contains(e.target) && !setBox.contains(e.target)){
                     this.isSelect = false;
                     this.selectId = '';
                 }
@@ -267,7 +291,35 @@ export default {
     },
     created(){},
     mounted(){
-        console.log('home----mounted')
+        this.$dragging.$on('dragged', (value) => {
+            console.log('拖拽开始---mounted---选中组件',value)
+            this.currentData = value.draged.props;
+            this.selectId = this.currentData.id;
+
+        })
+        this.$dragging.$on('dragend', (value) => {
+                // 再次拖拽放下的 要计算this.selectTop
+                console.log('打印当前的数组', this.centerData,this.currentData,)
+                this.idLists = [];
+                this.centerData.map(val => {
+                    this.idLists.push(val.props.id);
+                })
+                
+                let selectIndex = this.getRealIndex(this.currentData.id);
+                let selectHeight = parseInt(this.currentData.style.height);
+                let offsetTop = 0;
+                this.centerData.map((val,i)=>{
+                    if(i<=selectIndex){
+                        offsetTop += parseInt(val.props.style.height);
+                    }else{
+                        return ;
+                    }
+                })
+                this.selectTop = offsetTop + 15;
+               console.log(offsetTop,'距离上边线的距离',this.selectTop,'下标',selectIndex,selectHeight);
+        })
+        // this.$store.state.home = this
+        window.home = this
     },
     watch:{
         

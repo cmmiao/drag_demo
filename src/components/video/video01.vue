@@ -1,6 +1,9 @@
 <template>
-<div data-title="视频"  :id="prop.id" :class="{'select':prop.controlId==prop.id}" :style="{width:style.width,height:style.height,top:style.top,left:style.left}" @dragstart.stop="curData(prop)" @click.stop.prevent="curSelect(prop.id)">
-    <video class="dp-video" :src="prop.data.videosrc" controls>
+<!--  -->
+<div data-title="视频"  :id="prop.id" :class="{'select':prop.controlId==prop.id}" :style="{width:style.width,height:style.height,top:style.top,left:style.left}" 
+  @click="curSelect(prop)">
+  <!-- @dragstart="curData(prop)"  @dragend="curDrag(prop)" .stop.prevent-->
+    <video class="dp-video" :src="data[0].props.value"  :style="{width: imgWidth}" controls>
     </video>
     <!-- <div class="dp-video" :id="'video'+prop.id"></div> -->
 </div>
@@ -13,7 +16,7 @@
 
 export default {
     props: {
-            prop: {
+             prop: {
                 type: Object,
                 required: true
             },
@@ -25,6 +28,9 @@ export default {
                 type: Function,
                 required: true
             }
+            
+            
+            
         },
     data(){
         return {
@@ -33,10 +39,22 @@ export default {
             data: this.prop.data,
         }
     },
-    computed: {},
+    computed: {
+        imgWidth(){
+                // console.log('computed---',this.data[1].props.value)
+                if(this.data[1].props.value == "短"){
+                    return '33%';
+                }else if(this.data[1].props.value == "中"){
+                    return '50%' ;
+                }else{
+                    return '100%';
+                }
+                
+            }
+    },
     methods: {},
     created(){
-        console.log('视频', this.curData)
+        console.log('视频', this.data)
     },
     mounted(){
         // this.data.dp = new DPlayer({

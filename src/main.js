@@ -4,7 +4,9 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import store from './store/index.js'
-
+import VueDND from 'awe-dnd'
+// import "./minx"
+Vue.use(VueDND)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

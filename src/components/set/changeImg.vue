@@ -1,8 +1,8 @@
 <template>
     <div>
         <div class="img-set">
-            <div class="img-title">切换图片</div>
-            <input type="text" v-model="imgsrc" @input="changeValue(prop)" />
+            <div class="img-title">{{prop.title}}</div>
+            <input type="text" v-model="prop.value" @input="changeValue(prop)" />
         </div>
     </div>
 </template>
@@ -12,25 +12,27 @@ export default {
     props:['prop'],
     data(){
         return {
-            imgsrc:this.prop.imgsrc
+            
         }
     },
     methods:{
         changeValue(data){
             // 根据当前的id,修改数据centerData里的数据
-            console.log(data,this.imgsrc,'set---0')
+            // console.log(data,this.imgsrc,'set---0')
         }
     },
     created(){
-        console.log('set0----0', this.prop,this.prop.id)
+        // console.log('set0----选中的组件', this.prop)
     },
-    mounted(){},
+    mounted(){
+        //
+    },
 
 }
 </script>
 <style scoped>
 .img-set{
-    height: 50px;
+    height: 60px;
     margin-bottom: 10px;
 }
 .img-title{
@@ -39,13 +41,14 @@ export default {
     margin-bottom: 8px;
 }
 .img-set input {
-    width: 90%;
+    box-sizing: border-box;
+    width: 100%;
     height: 30px;
     line-height: 30px;
     border: 1px solid #eee;
     border-radius: 3px;
     font-size: 14px;
-    padding-left: 5px;
+    padding: 0 10px 0 10px;
     
 }
 </style>

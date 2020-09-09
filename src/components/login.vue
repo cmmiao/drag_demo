@@ -43,7 +43,6 @@ export default {
     },
     methods:{
         checkName(){
-            console.log('----',this.name)
             // 校验this.name是否为手机号或者邮箱
             const mobile = /^0?(13[0-9]|14[0-9]|15[0-9]|16[0-9]|17[0-9]|18[0-9]|19[0-9])[0-9]{8}$/;
             const email = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
